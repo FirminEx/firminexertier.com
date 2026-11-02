@@ -243,6 +243,10 @@
         box-shadow var(--duration-key-press) linear;
     }
 
+    .key[hidden] {
+      display: none;
+    }
+
     .key:hover {
       transform: translateY(-1px);
       box-shadow: var(--shadow-key-hover);
@@ -326,6 +330,10 @@
             <span id="serverStatusText">Checking</span>
           </span>
           <p class="server-note">Hosts my side projects. Polled every 30 s.</p>
+          <a class="key label" id="playFallOfTerra" href="https://firmin.taile5b75e.ts.net:10000" target="_blank" rel="noopener" hidden>
+            <span class="key-code code">G1</span>
+            <span class="key-text">Fall of Terra</span>
+          </a>
         </div>
       </section>
     </div>
@@ -353,6 +361,7 @@
       const serverState = serverIsOn ? "online" : "offline";
       document.getElementById("serverStatus").dataset.state = serverState;
       document.getElementById("serverStatusText").textContent = serverState;
+      document.getElementById("playFallOfTerra").hidden = !serverIsOn;
     }
 
     async function refreshServerStatus() {
