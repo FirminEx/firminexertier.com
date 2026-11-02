@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firmin Exertier</title>
+  <style>
+    :root {
+      --background: #ffffff;
+      --text: #1a1a1a;
+      --muted-text: #6b6b6b;
+      --unknown: #9e9e9e;
+      --on: #2e9d4f;
+      --off: #d93a3a;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #161616;
+        --text: #f2f2f2;
+        --muted-text: #a0a0a0;
+      }
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 0 16px;
+      background: var(--background);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 8vw, 3.5rem);
+      font-weight: 600;
+    }
+
+    .server-status {
+      margin: 0;
+      color: var(--muted-text);
+    }
+
+    .server-status-dot {
+      display: inline-block;
+      width: .6rem;
+      height: .6rem;
+      border-radius: 50%;
+      margin-right: .5rem;
+      background: var(--unknown);
+    }
+
+    .server-status[data-state="on"] .server-status-dot {
+      background: var(--on);
+    }
+
+    .server-status[data-state="off"] .server-status-dot {
+      background: var(--off);
+    }
+  </style>
+</head>
+<body>
+  <h1>Firmin Exertier</h1>
+  <p class="server-status" id="serverStatus" data-state="checking">
+    <span class="server-status-dot"></span>Home server: <span id="serverStatusText">checking</span>
+  </p>
+
+  <script>
+    const serverStatusUrl = "https://firmin.taile5b75e.ts.net:8443";
+    const serverStatusTimeoutInMilliseconds = 5000;
+    const serverStatusPollIntervalInMilliseconds = 30000;
+
+    async function isServerReachable() {
+      try {
+        await fetch(serverStatusUrl, {
+          mode: "no-cors",
+          cache: "no-store",
+          signal: AbortSignal.timeout(serverStatusTimeoutInMilliseconds),
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function showServerStatus(serverIsOn) {
+      const serverState = serverIsOn ? "on" : "off";
+      document.getElementById("serverStatus").dataset.state = serverState;
+      document.getElementById("serverStatusText").textContent = serverState;
+    }
+
+    async function refreshServerStatus() {
+      showServerStatus(await isServerReachable());
+    }
+
+    refreshServerStatus();
+    setInterval(refreshServerStatus, serverStatusPollIntervalInMilliseconds);
+  </script>
+</body>
+</html>
